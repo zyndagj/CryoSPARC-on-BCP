@@ -25,6 +25,12 @@ make data projects
 make NGPU=2 run
 ```
 
+## Dependencies
+
+- Docker
+- Authenticated NGC CLI
+- make
+
 ## Building the container
 
 ### 1. Add your license
@@ -114,7 +120,7 @@ CryoSPARC has a tutorial for running on a subset of the EMPIAR-10025 dataset cal
 
 https://guide.cryosparc.com/processing-data/get-started-with-cryosparc-introductory-tutorial
 
-The T20S sample data used by this wokflow was already downloaded with `make dataset`, and is mounted to `/test_data` by both the `run` and `benchmark` targets.
+The T20S sample data used by this workflow was already downloaded with `make dataset`, and is mounted to `/test_data` by both the `run` and `benchmark` targets.
 
 If you don't want to manually run each step in the T20S workflow, CryoSPARC has a convenience workflow
 
