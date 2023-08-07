@@ -1,0 +1,60 @@
+Updated for cryosparc v4.2.1 05/24/2023, compatible with CUDA 11.8 and Ada/Hopper.
+
+To build the container:
+-----------------------
+1. Modify the Dockerfile args to suit your user ID, CUDA path, data mount point
+2. Launch the build (docker customized for the current used)
+    docker build --build-arg CSUSER=`id -un` --build-arg CSUID=`id -u` --build-arg CSGID=`id -g` -t cryosparc .
+
+
+To launch docker:
+-----------------
+The directory with the input data (ideally fast SSD or RAM) must be made visible to the container
+using the same path (default SSDPATH=/data) used during the container build.
+Similary, the project directory (default PROJDIR=/project) must be made visible to the container.
+The output files created inside the project directory will have the UID/GID specified during the build.
+Make sure the user inside the container has read and write permissions to the directory mounted as /project.
+Reading movies can crash if the container does not have enough shared memory. Increase --shm-size if needed.
+
+    nvidia-docker run --rm -it -p 39000:39000 --shm-size=1G -v /ssd/cryosparc-dataset/benchmark_data:/data -v /ssd/project1:/project cryosparc
+or
+    docker run --gpus all --rm -it -p 39000:39000 --shm-size=1G -v /ssd/cryosparc-dataset/benchmark_data:/data  -v /ssd/project1:/project cryosparc
+
+
+Initial setup inside the container:
+-----------------------------------
+The default command is launching all the cryoSPARC daemons, creating the default user and project.
+If not using the default command, check the Dockerfile's CMD to see how to setup the environment manually.
+
+
+Running the benchmark:
+----------------------
+cd cryosparc2_benchmark
+    python cryosparc_benchmark.py --master_hostname localhost --port 39000 --worker_hostname localhost --gpus 0 \
+    --input_data_dir /data/EMPIAR/10028 --project_uid "P1" --user_email "user@nvidia.com" --mode "reconstruct" --dataset 10028 --out /tmp/reconstruct.json
+
+
+Package info & release notes:
+-----------------------------
+NOTE: The Cryosparc source packaged here is not publicly available.
+
+Initial release with v2.15.0:
+- Most of the modifications are done inside the cryosparc2_package/developer_install.sh
+    Instead of cloning the source with git, it's untared from the local package directory.
+    The hostname is forced to localhost in order to work with Docker.
+- In cryosparc2_webapp/package.json, bcrypt has been upgraded to 3.0.2 to avoid install issues.
+- Pycuda patch is currently supplied, but at some point the modifications will be part of the official release.
+
+Updated for cryoSPARC v3.0.1 (01/12/2021):
+- New repositories needed, and an extra build step was required to replace the git hooks build.
+- Now using Python3, pycuda v2020.1, works OK with CUDA 11+ and GA100.
+- cryoSPARC startup hack (inside a Docker container) is not needed anymore
+- The benchmark script has been ported to Python3, and uses an extra parameter "user_email" which points
+  to the cryoSPARC user created during container creation (user@nvidia.com)
+
+Updated to pull version v4.0.3 by default (11/21/2022)
+- The benchmark script is now copied into the container, with a simple launch script (/workspace/run.sh)
+
+Updated to pull version v4.2.1 by default (05/24/2023)
+- Added -l parameter to adduser to avoid issues with large UIDs.
+- Instructions modified to include the shm_size parameter.
