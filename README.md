@@ -50,7 +50,7 @@ Since this container will contain your license, make sure that this is not pushe
 CONTAINER=nvcr.io/nvidian/sae/$(USER)_cryosparc:4.2.1
 ```
 
-> Note: This is a Makefile, so variables use $(VAR) instead of normal bash ${VAR} notation
+> Note: This is a Makefile, so variables use `$(VAR)` instead of normal bash `${VAR}` notation
 
 ### 3. Update admin email and password (optional)
 
